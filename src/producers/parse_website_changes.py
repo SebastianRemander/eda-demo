@@ -9,11 +9,11 @@ GROUP_ID = "WEBSITE_CHANGES"
 
 async def amain():
     """Consume website crawl result, produce parsed changes."""
-    consumer = await Consumer.create(Topic.CRAWL, group_id=GROUP_ID)
+    consumer = await Consumer.create(Topic.CRAWL.value, group_id=GROUP_ID)
     producer = await Producer.create()
     async for message in consumer:
         data = message.value
-        await producer.send_and_wait(Topic.CHANGE, parse_website_change(data))
+        await producer.send_and_wait(Topic.CHANGE.value, parse_website_change(data))
 
 
 def parse_website_change(data: dict) -> bytes:

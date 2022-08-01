@@ -10,7 +10,7 @@ GROUP_ID = "WEBSITE_RELEVANCY"
 
 async def amain():
     """Consume pagerank and ner results, produce website relevancy results."""
-    consumer = await Consumer.create(Topic.NER, Topic.PAGERANK, group_id=GROUP_ID)
+    consumer = await Consumer.create(Topic.NER.value, Topic.PAGERANK.value, group_id=GROUP_ID)
     producer = await Producer.create()
     cache = defaultdict(dict)  # for storing the consumed results for the same change event
     async for message in consumer:
@@ -22,7 +22,7 @@ async def amain():
         if message.topic == Topic.PAGERANK:
             cached_event["pagerank"] = data["pagerank"]
         if "ner" in cached_event and "pagerank" in cached_event:
-            await producer.send_and_wait(Topic.RELEVANCY, calculate_relevancy(cached_event))
+            await producer.send_and_wait(Topic.RELEVANCY.value, calculate_relevancy(cached_event))
             del cache[data["id"]]  # release storage
 
 

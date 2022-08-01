@@ -9,11 +9,11 @@ GROUP_ID = "WEBSITE_NER"
 
 async def amain():
     """Consume website changes, produce NER results."""
-    consumer = await Consumer.create(Topic.CHANGE, group_id=GROUP_ID)
+    consumer = await Consumer.create(Topic.CHANGE.value, group_id=GROUP_ID)
     producer = await Producer.create()
     async for message in consumer:
         data = message.value
-        await producer.send_and_wait(Topic.NER, calculate_ner(data))
+        await producer.send_and_wait(Topic.NER.value, calculate_ner(data))
 
 
 def calculate_ner(data: dict) -> bytes:

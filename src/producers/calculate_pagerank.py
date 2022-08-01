@@ -9,11 +9,11 @@ GROUP_ID = "WEBSITE_PAGERANK"
 
 async def amain():
     """Consume website changes, produce pagerank results."""
-    consumer = await Consumer.create(Topic.CHANGE, group_id=GROUP_ID)
+    consumer = await Consumer.create(Topic.CHANGE.value, group_id=GROUP_ID)
     producer = await Producer.create()
     async for message in consumer:
         data = message.value
-        await producer.send_and_wait(Topic.PAGERANK, await calculate_pagerank(data))
+        await producer.send_and_wait(Topic.PAGERANK.value, await calculate_pagerank(data))
 
 
 async def calculate_pagerank(data: dict) -> bytes:
