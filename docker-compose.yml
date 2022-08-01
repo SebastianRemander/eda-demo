@@ -5,7 +5,7 @@ services:
     container_name: webapp
     env_file:
       - docker-env
-    command: python /opt/eda-demo/app.py
+    command: python /opt/eda-demo/src/app.py
     volumes:
       - .:/opt/eda-demo/
     ports:
@@ -16,7 +16,7 @@ services:
     container_name: producer_0
     env_file:
       - docker-env
-    command: python /opt/eda-demo/producers/parse_website_changes.py
+    command: python /opt/eda-demo/src/producers/parse_website_changes.py
     volumes:
       - .:/opt/eda-demo/
     expose:
@@ -27,7 +27,7 @@ services:
     container_name: producer_1
     env_file:
       - docker-env
-    command: python /opt/eda-demo/producers/calculate_pagerank.py
+    command: python /opt/eda-demo/src/producers/calculate_pagerank.py
     volumes:
       - .:/opt/eda-demo/
     expose:
@@ -40,7 +40,7 @@ services:
     container_name: producer_2
     env_file:
       - docker-env
-    command: python /opt/eda-demo/producers/website_ner.py
+    command: python /opt/eda-demo/src/producers/website_ner.py
     volumes:
       - .:/opt/eda-demo/
     expose:
@@ -53,7 +53,7 @@ services:
     container_name: producer_3
     env_file:
       - docker-env
-    command: python /opt/eda-demo/producers/website_relevancy.py
+    command: python /opt/eda-demo/src/producers/website_relevancy.py
     volumes:
       - .:/opt/eda-demo/
     expose:
