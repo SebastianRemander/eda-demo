@@ -9,6 +9,7 @@ KAFKA_HOST = "kafka:9092"
 
 
 class Consumer(AIOKafkaConsumer):
+    """https://aiokafka.readthedocs.io/en/stable/consumer.html"""
 
     def __init__(self, *args, **kwargs):
         return super().__init__(
@@ -32,6 +33,7 @@ def message_serializer(msg) -> bytes:
 
 
 class Producer(AIOKafkaProducer):
+    """https://aiokafka.readthedocs.io/en/stable/producer.html"""
 
     def __init__(self, *args, **kwargs):
         return super().__init__(
