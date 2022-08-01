@@ -10,29 +10,30 @@ services:
       - .:/opt/eda-demo/
     ports:
       - '5000:5000'
+    depends_on:
+      - kafka
 
   p0:
     image: pykafka/base:latest
     container_name: producer_0
     env_file:
       - docker-env
-    command: python /opt/eda-demo/src/producers/parse_website_changes.py
+    command: bash -c "sleep 5 && exec python /opt/eda-demo/src/producers/parse_website_changes.py"
     volumes:
       - .:/opt/eda-demo/
-    expose:
-      - 8001  # TODO kafka ports
+    depends_on:
+      - kafka
 
   p1:
     image: pykafka/base:latest
     container_name: producer_1
     env_file:
       - docker-env
-    command: python /opt/eda-demo/src/producers/calculate_pagerank.py
+    command: bash -c "sleep 5 && exec python /opt/eda-demo/src/producers/calculate_pagerank.py"
     volumes:
       - .:/opt/eda-demo/
-    expose:
-      - 8001  # TODO kafka ports
     depends_on:
+      - kafka
       - p0
 
   p2:
@@ -40,12 +41,11 @@ services:
     container_name: producer_2
     env_file:
       - docker-env
-    command: python /opt/eda-demo/src/producers/website_ner.py
+    command: bash -c "sleep 5 && python /opt/eda-demo/src/producers/website_ner.py"
     volumes:
       - .:/opt/eda-demo/
-    expose:
-      - 8001  # TODO kafka ports
     depends_on:
+      - kafka
       - p0
 
   p3:
@@ -53,31 +53,33 @@ services:
     container_name: producer_3
     env_file:
       - docker-env
-    command: python /opt/eda-demo/src/producers/website_relevancy.py
+    command: bash -c "sleep 5 && python /opt/eda-demo/src/producers/website_relevancy.py"
     volumes:
       - .:/opt/eda-demo/
-    expose:
-      - 8001  # TODO kafka ports
     depends_on:
+      - kafka
       - p1
       - p2
 
   zookeeper:
-    image: bitnami/zookeeper:latest
+    image: wurstmeister/zookeeper
     ports:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
   kafka:
-    image: bitnami/kafka:latest
+    image: wurstmeister/kafka
     ports:
-      - '9092:9092'
+      - "9092:9092"
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    depends_on:
-      - zookeeper
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9092
+      KAFKA_LISTENERS: INSIDE://:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CREATE_TOPICS: "website.fct.crawl.0:1:1,website.cdc.change.0:1:1,website.cdc.pagerank.0:1:1,website.cdc.ner.0:1:1,website.cdc.relevancy.0:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
