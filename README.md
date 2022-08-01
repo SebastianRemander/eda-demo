@@ -17,7 +17,9 @@ NOTE: **This project is only intended for local development**. For production us
 
 `docker-compose up --force-recreate --always-recreate-deps --renew-anon-volumes`
 
-4. Stop
+4. Navigate to localhost:5000/docs with your favorite browser to check out a simple website crawling system
+
+5. Stop
 
 `docker-compose down --volumes`
 
