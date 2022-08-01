@@ -1,9 +1,13 @@
 import asyncio
+import logging
 from collections import defaultdict
 from json import dumps
 from random import randint
 
 from src.streaming import Consumer, Producer, Topic
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 GROUP_ID = "WEBSITE_RELEVANCY"
@@ -24,6 +28,7 @@ async def amain():
         if message.topic == Topic.PAGERANK:
             cached_event["pagerank"] = data["pagerank"]
         if "ner" in cached_event and "pagerank" in cached_event:
+            LOGGER.info("processing event %s %s", cached_event["id"], cached_event["domain"])
             await producer.send_and_wait(Topic.RELEVANCY.value, calculate_relevancy(cached_event))
             del cache[data["id"]]  # release storage
 
@@ -40,4 +45,5 @@ def calculate_relevancy(data: dict) -> bytes:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s [%(module)s:%(lineno)s] %(message)s')
     asyncio.run(amain())
