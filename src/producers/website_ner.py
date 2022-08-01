@@ -1,4 +1,5 @@
 import asyncio
+from json import dumps
 from random import randint
 
 from src.streaming import Consumer, Producer, Topic
@@ -17,7 +18,7 @@ async def amain():
 
 
 def calculate_ner(data: dict) -> bytes:
-    return json.dumps(
+    return dumps(
         {
             "domain": data["domain"],
             "id": data["id"],

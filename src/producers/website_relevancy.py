@@ -1,5 +1,6 @@
 import asyncio
 from collections import defaultdict
+from json import dumps
 from random import randint
 
 from src.streaming import Consumer, Producer, Topic
@@ -17,6 +18,7 @@ async def amain():
         data = message.value
         cached_event = cache[data["id"]]
         cached_event["domain"] = data["domain"]
+        cached_event["id"] = data["id"]
         if message.topic == Topic.NER:
             cached_event["ner"] = data["ner"]
         if message.topic == Topic.PAGERANK:
@@ -28,7 +30,7 @@ async def amain():
 
 def calculate_relevancy(data: dict) -> bytes:
     relevancy = data["pagerank"] + data["ner"]["persons"] + data["ner"]["brands"] / 2
-    return json.dumps(
+    return dumps(
         {
             "domain": data["domain"],
             "id": data["id"],

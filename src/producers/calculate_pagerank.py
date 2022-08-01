@@ -1,4 +1,5 @@
 import asyncio
+from json import dumps
 from random import randint
 
 from src.streaming import Consumer, Producer, Topic
@@ -20,7 +21,7 @@ async def calculate_pagerank(data: dict) -> bytes:
     await asyncio.sleep(2)  # a db visit to check other websites linking to this
     links_in = randint(0, 10)
     links_out = data["n_of_links"]
-    return json.dumps(
+    return dumps(
         {
             "domain": data["domain"],
             "id": data["id"],
