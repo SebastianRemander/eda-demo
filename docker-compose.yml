@@ -1,5 +1,16 @@
 version: "3"
 services:
+  web:
+    image: pykafka/base:latest
+    container_name: webapp
+    env_file:
+      - docker-env
+    command: python /opt/eda-demo/app.py
+    volumes:
+      - .:/opt/eda-demo/
+    ports:
+      - '5000:5000'
+
   p0:
     image: pykafka/base:latest
     container_name: producer_0
@@ -10,7 +21,6 @@ services:
       - .:/opt/eda-demo/
     expose:
       - 8001  # TODO kafka ports
-
 
   p1:
     image: pykafka/base:latest
