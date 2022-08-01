@@ -1,3 +1,5 @@
+from json import loads
+
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
 
@@ -11,6 +13,7 @@ class Consumer(AIOKafkaConsumer):
             *args,
             **kwargs,
             bootstrap_servers=KAFKA_HOST,
+            value_deserializer=loads,
         )
 
     @classmethod
