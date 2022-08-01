@@ -1,0 +1,53 @@
+version: "3"
+services:
+  p0:
+    image: pykafka/base:latest
+    container_name: producer_0
+    env_file:
+      - docker-env
+    command: python /opt/eda-demo/producers/parse_website_changes.py
+    volumes:
+      - .:/opt/eda-demo/
+    expose:
+      - 8001  # TODO kafka ports
+
+
+  p1:
+    image: pykafka/base:latest
+    container_name: producer_1
+    env_file:
+      - docker-env
+    command: python /opt/eda-demo/producers/calculate_pagerank.py
+    volumes:
+      - .:/opt/eda-demo/
+    expose:
+      - 8001  # TODO kafka ports
+    depends_on:
+      - p0
+
+  p2:
+    image: pykafka/base:latest
+    container_name: producer_2
+    env_file:
+      - docker-env
+    command: python /opt/eda-demo/producers/website_ner.py
+    volumes:
+      - .:/opt/eda-demo/
+    expose:
+      - 8001  # TODO kafka ports
+    depends_on:
+      - p0
+
+  p3:
+    image: pykafka/base:latest
+    container_name: producer_3
+    env_file:
+      - docker-env
+    command: python /opt/eda-demo/producers/website_relevancy.py
+    volumes:
+      - .:/opt/eda-demo/
+    expose:
+      - 8001  # TODO kafka ports
+    depends_on:
+      - p1
+      - p2
