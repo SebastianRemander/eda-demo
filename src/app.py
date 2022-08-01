@@ -1,4 +1,6 @@
+from functools import lru_cache
 from json import dumps
+from typing import Any, Mapping
 from uuid import uuid4
 
 from fastapi import FastAPI
@@ -12,8 +14,6 @@ from src.streaming import Consumer, Producer, Topic
 
 
 CONSUMER = PRODUCER = None  # Initialize clients outside async context
-
-EVENT_CACHE = dict()
 
 APP = FastAPI()
 
@@ -39,14 +39,25 @@ async def get_website_relevancy(
     Get website relevancy for a given id, i.e., get relevancy value at a certain
     point in time.
     """
-    global EVENT_CACHE
-    if cached_event := EVENT_CACHE.get(job_id):
-        return cached_event
-    async for message in CONSUMER:
-        event = message.value
-        if event.get("id") == job_id:
-            EVENT_CACHE[job_id] = event
-            return event
+    return await CACHE.get_website_relevancy_event(job_id)
+
+
+class Cache:
+
+    def __init__(self):
+        self.cache = {}
+
+    async def get_website_relevancy_event(self, job_id: str) -> Mapping[str, Any]:
+        if cached_event := self.cache.get(job_id):
+            return cached_event
+        async for message in CONSUMER:
+            event = message.value
+            if event.get("id") == job_id:
+                self.cache[job_id] = event
+                return event
+
+
+CACHE = Cache()
 
 
 @APP.on_event("startup")
