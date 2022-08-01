@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from json import dumps
 from random import randint
 
 from src.streaming import Consumer, Producer, Topic
@@ -22,19 +21,17 @@ async def amain():
         await producer.send_and_wait(Topic.NER.value, calculate_ner(data))
 
 
-def calculate_ner(data: dict) -> bytes:
-    return dumps(
-        {
-            "domain": data["domain"],
-            "id": data["id"],
-            # some fancy NER detection results
-            "ner": {
-                "persons": randint(0, 10),
-                "locations": randint(0, 10),
-                "brands": randint(0, 10),
-            },
-        }
-    ).encode()
+def calculate_ner(data: dict) -> dict:
+    return {
+        "domain": data["domain"],
+        "id": data["id"],
+        # some fancy NER detection results
+        "ner": {
+            "persons": randint(0, 10),
+            "locations": randint(0, 10),
+            "brands": randint(0, 10),
+        },
+    }
 
 
 if __name__ == "__main__":

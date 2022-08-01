@@ -1,5 +1,4 @@
 from functools import lru_cache
-from json import dumps
 from typing import Any, Mapping
 from uuid import uuid4
 
@@ -27,7 +26,7 @@ async def simulate_website_crawl_result(
     """
     job_id = str(uuid4())
     payload = {"domain": request.domain, "id": job_id, "content": "<div>Hello Kafka</div>"}
-    await PRODUCER.send_and_wait(Topic.CRAWL.value, dumps(payload).encode())
+    await PRODUCER.send_and_wait(Topic.CRAWL.value, payload)
     return payload
 
 

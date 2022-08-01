@@ -1,7 +1,6 @@
 import asyncio
 import logging
 from collections import defaultdict
-from json import dumps
 from random import randint
 
 from src.streaming import Consumer, Producer, Topic
@@ -33,15 +32,13 @@ async def amain():
             del cache[data["id"]]  # release storage
 
 
-def calculate_relevancy(data: dict) -> bytes:
+def calculate_relevancy(data: dict) -> dict:
     relevancy = data["pagerank"] + data["ner"]["persons"] + data["ner"]["brands"] / 2
-    return dumps(
-        {
-            "domain": data["domain"],
-            "id": data["id"],
-            "relevancy": relevancy,
-        }
-    ).encode()
+    return {
+        "domain": data["domain"],
+        "id": data["id"],
+        "relevancy": relevancy,
+    }
 
 
 if __name__ == "__main__":

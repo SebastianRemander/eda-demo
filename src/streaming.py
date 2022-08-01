@@ -1,6 +1,6 @@
 import os
 from enum import Enum
-from json import loads
+from json import dumps, loads
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
@@ -27,6 +27,10 @@ class Consumer(AIOKafkaConsumer):
         return consumer
 
 
+def message_serializer(msg) -> bytes:
+    return dumps(msg).encode()
+
+
 class Producer(AIOKafkaProducer):
 
     def __init__(self, *args, **kwargs):
@@ -36,6 +40,7 @@ class Producer(AIOKafkaProducer):
             bootstrap_servers=KAFKA_HOST,
             security_protocol=os.environ.get("KAFKA_SECURITY_PROTOCOL", "PLAINTEXT"),
             sasl_mechanism=os.environ.get("KAFKA_SASL_MECHANISM", "PLAIN"),
+            value_serializer=message_serializer,
         )
 
     @classmethod
